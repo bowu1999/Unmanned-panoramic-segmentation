@@ -28,7 +28,7 @@ class Getdata(torch.utils.data.Dataset):
         # 类别信息文件
         self.classes_root = os.path.join(data_root, "class_dict.csv")
         # 读取类别信息
-        data = pd.read_csv(path, sep=',',header='infer')
+        data = pd.read_csv(self.classes_root, sep=',',header='infer')
         self.colormap = np.array(data.loc[:, ['r', 'b', 'g']]).tolist()
         self.classes = list(data["name"])
         self.colormap2label = torch.zeros(256 ** 3, dtype=torch.uint8)
@@ -115,6 +115,7 @@ class Getdata(torch.utils.data.Dataset):
         label = self.labels[key]
         image = Image.open(os.path.join(self.root,image)).convert('RGB')
         label = Image.open(os.path.join(self.label_root,label)).convert('RGB')
+        image, label = self.rand_crop(image, label, *self.crop_size)
         plt.subplot(121)
         plt.imshow(image), plt.axis('off')
         plt.subplot(122)
